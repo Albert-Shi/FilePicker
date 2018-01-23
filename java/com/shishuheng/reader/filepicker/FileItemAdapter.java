@@ -13,6 +13,7 @@ import com.shishuheng.reader.R;
 import com.shishuheng.reader.process.Utilities;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /**
@@ -29,15 +30,18 @@ public class FileItemAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        //获取布局 以及 相关的控件
         View itemView = LayoutInflater.from(context).inflate(R.layout.fileitemadapter_layout, null);
         File file = list.get(position);
         ImageView imageView = itemView.findViewById(R.id.file_icon);
         TextView filename = itemView.findViewById(R.id.file_name);
         TextView filesize = itemView.findViewById(R.id.file_size);
-        String name = file.getName();
-        String extension_name = "";
+        String name = file.getName();   //文件名
+        String extension_name = "";     //扩展名
+        //判断是否有扩展名 如果有则获取
         if (name.lastIndexOf('.') > -1)
             extension_name = name.substring(name.lastIndexOf('.'));
+        //根据不同类型的文件以及是否是文件夹 设置不同的文件图标 (此处可根据具体需要进行补充)
         if (file.isDirectory()) {
             imageView.setImageResource(R.drawable.fileicon_folder);
         } else if (extension_name.equalsIgnoreCase(".txt")) {
@@ -63,7 +67,8 @@ public class FileItemAdapter extends BaseAdapter {
         }
         filename.setText(name);
         if (file.isFile())
-            filesize.setText(Utilities.getFileSize(file.length()));
+            //获取文件大小
+            filesize.setText(getFileSize(file.length()));
         return itemView;
     }
 
@@ -80,5 +85,29 @@ public class FileItemAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    //文件大小计算
+    public static String getFileSize(long size) {
+        int i = 1;
+        String unit = "B";
+        float temp = size;
+        while (temp >= 1024) {
+            temp /= 1024;
+            i++;
+        }
+        switch (i) {
+            case 1: unit = "B";break;
+            case 2: unit = "KB"; break;
+            case 3: unit = "MB"; break;
+            case 4: unit = "GB"; break;
+            case 5: unit = "TB"; break;
+            default: unit = "文件太大，已经不知道用什么单位了";
+        }
+        //格式化两位小数 参考 http://blog.csdn.net/chivalrousli/article/details/51122113
+        NumberFormat percentageFormat = NumberFormat.getNumberInstance();
+        percentageFormat.setMaximumFractionDigits(2);
+        String result = percentageFormat.format(temp) +" "+ unit;
+        return result;
     }
 }
