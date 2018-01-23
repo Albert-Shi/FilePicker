@@ -1,4 +1,4 @@
-package com.shishuheng.reader.ui.filepicker;
+package com.shishuheng.reader.filepicker;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
